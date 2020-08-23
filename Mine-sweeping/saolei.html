@@ -75,10 +75,9 @@
             e.insertAdjacentHTML('afterbegin', '<img class="picture" src="mine.png" alt="flag">')
         }
         document.addEventListener('mousedown',function(e){
-            if(e.button == 2){
-                let self = e.target
+            let self = e.target
+            if(e.button == 2 && !self.classList.contains('open') && self.classList.contains('cell')){
                 self.classList.toggle('flag')
-
             }
 
         })
@@ -89,12 +88,13 @@
     let num2 = 0
     const vjkl = function(square) {
         bindAll('.cell', 'click', function(event) {
-            log('点击 tag')
+            log('点击')
             //计步器
             let a = e('.count')
             num2 = num2 + 1
             a.innerHTML = 'count:' + showNumber(num2)
             let self = event.target
+            self.classList.remove('flag')
             if (self.dataset.number == 9) {
                 let img = es('img')
                 for (let i = 0; i < img.length; i++) {
@@ -119,16 +119,16 @@
         })
     }
 
-    const vjklAround = function(square, x, y) {
+    const openAround = function(square, x, y) {
             //标记周围元素
-            vjkl1(square, x - 1, y - 1)
-            vjkl1(square, x, y - 1)
-            vjkl1(square, x + 1, y - 1)
-            vjkl1(square, x - 1, y)
-            vjkl1(square, x + 1, y)
-            vjkl1(square, x - 1, y + 1)
-            vjkl1(square, x, y + 1)
-            vjkl1(square, x + 1, y + 1)
+        open(square, x - 1, y - 1)
+        open(square, x, y - 1)
+        open(square, x + 1, y - 1)
+        open(square, x - 1, y)
+        open(square, x + 1, y)
+        open(square, x - 1, y + 1)
+        open(square, x, y + 1)
+        open(square, x + 1, y + 1)
     }
     //设置一个数组line，判断0位置是否已经展开过
     const judge = function (line, number) {
@@ -142,7 +142,7 @@
         return true
     }
     //递归展开
-    const vjkl1 = function(square, x, y) {
+    const open = function(square, x, y) {
         let n = square.length
         let line = []
         if (x >= 0 && x < n && y >= 0 && y < n) {
@@ -152,7 +152,7 @@
                 if(a.dataset.number == 0){
                     line.push(num)
                     a.classList.add('open')
-                    vjklAround(square, x, y)
+                    openAround(square, x, y)
                 } else if(a.dataset.number !== 9){
                     line.push(num)
                     a.classList.add('open')
