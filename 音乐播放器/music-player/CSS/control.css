@@ -1,0 +1,28 @@
+.outer {
+    position: relative;
+    top: 100%;
+    width: 320px;
+    height: 2px;
+    background: #C2C2C4;
+}
+
+.inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: red;
+}
+
+.dot {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    width: 10px;
+    height: 10px;
+    border: 1px solid black;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+}

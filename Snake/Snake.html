@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Snake</title>
+    <link type="text/css" rel="stylesheet" href="Snake.css">
+</head>
+<body>
+<div class="score">score:000</div>
+<div class="button"><input type="button" value="重新开始" onclick="location.reload()"></div>
+<script src="omit.js"></script>
+<script>
+    const randomLine = function (n) {
+        let l = []
+        for (let i = 0; i < n; i++) {
+            l.push(0)
+        }
+        return l
+    }
+    const randomSquare = function (n) {
+        let l = []
+        for (let i = 0; i < n; i++) {
+            let e = randomLine(n)
+            l.push(e)
+        }
+        return l
+    }
+    //更新number和内容
+    const update = function (square) {
+        for (let i = 0; i < square.length; i++) {
+            for (let j = 0; j < square[i].length; j++) {
+                let a = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+                a.innerHTML = `${square[i][j]}`
+                a.dataset.number = `${square[i][j]}`
+            }
+        }
+    }
+    //随机将数组中为0变成1, 1为食物的位置, 2为初始位置
+    const randomChange = function (square, l) {
+        let s = []
+        for (let i = 0; i < square.length; i++) {
+            for (let j = 0; j < square[0].length; j++) {
+                if (square[i][j] === 0) {
+                    s.push(`${i}&${j}`)
+                }
+            }
+        }
+        let n = Math.random()
+        log(s.length)
+        n = n * s.length
+        n = Math.floor(n)
+        let m = String(s[n])
+        log(m)
+        for (let k = 0; k < m.length; k++) {
+            if (m[k] === '&') {
+                let i = Number(m.slice(0, k))
+                let j = Number(m.slice(k + 1))
+                log('i', 'j', i, j)
+                if (l === 1) {
+                    square[i][j] = 1
+                    let a = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+                    a.innerHTML = `1`
+                    a.dataset.number = `1`
+                }
+                if (l === 2) {
+                    i = i % 4 + 5
+                    j = j % 4 + 5
+                    square[i][j] = 2
+                    square[i][j + 1] = 2
+                    setTail(i, j + 1)
+                    setHead(i, j)
+                }
+            }
+        }
+    }
+    //设置头部
+    const setHead = function (i, j) {
+        let a = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+        a.classList.add('head')
+        a.innerHTML = `2`
+        a.dataset.number = `2`
+    }
+    //设置尾部
+    const setTail = function (i, j) {
+        let a = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+        a.classList.add('tail')
+        a.innerHTML = `2`
+        a.dataset.number = `2`
+    }
+    //生成表格
+    const templateCell = function(line, x) {
+        let str = ''
+        for (let i = 0; i < line.length; i++) {
+            let n = line[i]
+            str += `<div class="cell" data-number="${n}" data-x="${x}" data-y="${i}">` + `${n}` + '</div>'
+        }
+        return str
+    }
+    const templateRow = function(square) {
+        let str = ''
+        for (let i = 0; i < square.length; i++) {
+            str += '<div class="row clearfix">'
+            str += templateCell(square[i], i)
+            str += '</div>'
+        }
+        return str
+    }
+    const renderSquare = function(square) {
+        let body = e('body')
+        body.insertAdjacentHTML('beforeend', '<div id="id-div-snake"></div>')
+        let mine = e('#id-div-snake')
+        mine.insertAdjacentHTML('beforeend', templateRow(square))
+    }
+    //建立一个记录蛇身体所在位置的数组
+    const snake = function () {
+        let s = []
+        let b = e('.tail')
+        let i = Number(b.dataset.x)
+        let j = Number(b.dataset.y)
+        s.push([i, j])
+        let a = e('.head')
+        i = Number(a.dataset.x)
+        j = Number(a.dataset.y)
+        s.push([i, j])
+        log(s)
+        return s
+    }
+    let num = 0
+    //改变头的位置，change函数,吃东西
+    const changeHead = function (x, y, save, square) {
+        let a = e('.head')
+        let i = a.dataset.x
+        let j = a.dataset.y
+        i = Number(i) + x
+        j = Number(j) + y
+        if (i < 0 || j < 0) {
+           alert('游戏结束')
+        }
+        if (square[i][j] === 2) {
+            alert('游戏结束')
+        }
+        save.push([i, j])
+        square[i][j] = 2
+        let b = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+        if (b == null) {
+            alert('游戏结束')
+        }
+        a.classList.remove('head')
+        if(b.dataset.number === '1') {
+            b.dataset.number = '2'
+            b.innerHTML = '2'
+            i = i + Number(x)
+            j = j + Number(y)
+            save.push([i, j])
+            c = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+            c.classList.add('head')
+            c.dataset.number = '2'
+            c.innerHTML = '2'
+            let a = e('.score')
+            num = num + 1
+            if (num === 20) {
+                alert('游戏胜利')
+            }
+            a.innerHTML = 'score:' + showNumber(num)
+            square[i][j] = 2
+            randomChange(square, 1)
+        } else if(b.dataset.number === '0'){
+            b.dataset.number = '2'
+            b.innerHTML = '2'
+            b.classList.add('head')
+        }
+    }
+    // 改变尾巴的位置
+    const changeTail = (save, square) => {
+        let i = save[0][0]
+        let j = save[0][1]
+        square[i][j] = 0
+        let a = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+        a.classList.remove('tail')
+        a.dataset.number = '0'
+        a.innerHTML = '0'
+        save.splice(0, 1)
+        i = save[0][0]
+        j = save[0][1]
+        let b = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+        b.classList.add('tail')
+    }
+    // 左移
+    const moveLeft = function (save, square) {
+        changeHead(0, -1, save, square)
+        changeTail(save, square)
+
+    }
+    //右移
+    const moveRight = function (save, square) {
+        changeHead(0, 1, save, square)
+        changeTail(save, square)
+    }
+    //上移
+    const moveUp = function (save, square) {
+        changeHead(-1, 0, save, square)
+        changeTail(save, square)
+    }
+    //下移
+    const moveDown = function (save, square) {
+        changeHead(1, 0, save, square)
+        changeTail(save, square)
+    }
+    //实现上下左右使snake移动
+    const direction = function(save, square) {
+        let n = 300
+        if (save.length === 10) {
+            n = 100
+        }
+        var timer = setInterval(function(){
+            moveLeft(save, square)
+        }, n)
+        document.onkeydown = function (event) {
+            let e = event
+            if(e.keyCode === 37 && e.keyCode !== 39) {
+                clearInterval(timer)
+                timer = setInterval(function(){
+                    moveLeft(save, square)
+                }, n)
+            }
+            if(e.keyCode === 38 && e.keyCode !== 40) {
+                clearInterval(timer)
+                timer = setInterval(function(){
+                    moveUp(save, square)
+                }, n)
+            }
+            if(e.keyCode === 39 && e.keyCode !== 37) {
+                clearInterval(timer)
+                timer = setInterval(function(){
+                    moveRight(save, square)
+                }, n)
+            }
+            if(e.keyCode === 40 && e.keyCode !== 38) {
+                clearInterval(timer)
+                timer = setInterval(function(){
+                    moveDown(save, square)
+                }, n)
+            }
+        }
+
+    }
+    //记录分数
+    const showNumber = function(num) {
+        if (num < 10) {
+            return `00${num}`
+        } else if(num < 100) {
+            return `0${num}`
+        } else {
+            return `${num}`
+        }
+    }
+    const score = function (save) {
+        let n = save.length
+        let body = e('body')
+        body.insertAdjacentHTML('beforeend', '<div id="id-div-snake">n</div>')
+    }
+    const __main = function() {
+        let square = []
+        let save = []
+        square = randomSquare(20)
+        renderSquare(square)
+        randomChange(square, 1)
+        randomChange(square, 2)
+        log(square)
+        save = snake()
+        direction(save, square)
+
+    }
+    __main()
+</script>
+</body>
+</html>

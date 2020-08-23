@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="stylesheet" href="CSS/control.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="CSS/materialize.min.css">
+</head>
+<body>
+<audio id="id-audio-player" src="audio/UNICORN.mp3"></audio>
+<div class="wrapper">
+    <div class="card player">
+        <div class="z-depth-1 close"><i class="material-icons">close</i></div>
+        <div class="image">
+            <div class="bottom-content">
+                <div class="title">
+                    <h6 class="song-name">UNICORN</h6><span class="artist-name">UC</span></div>
+                <div class="repeat"><i class="material-icons">repeat</i></div>
+                <div class="shuffle"><i class="material-icons">shuffle</i></div>
+            </div>
+            <div class="outer">
+                <div class="inner">
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+        <div class="controls">
+            <div class="player-controls_btn player-controls__btn_add" id="player-controls__btn_add"><i class="material-icons">add</i></div>
+            <div class="player-controls_btn player-controls__btn_prev" id="player-controls__btn_prev"><i class="material-icons">skip_previous</i></div>
+            <div class="player-controls_btn player-controls__btn_play play"><i class="material-icons">play_arrow</i></div>
+            <div class="player-controls_btn  player-controls__btn_next  player-controls__btn_disabled" title=""><i class="material-icons">skip_next</i></div>
+            <div class="player-controls_btn  player-controls__btn_share" title=""><i class="material-icons">share</i></div>
+        </div>
+        <div class="next-song">
+            <div class="cover"></div>
+            <div class="title">
+        <span class="next-title">
+<!--          Далі-->
+        </span>
+<!--                <br /> Silver Moon-->
+            </div>
+            <div class="playlist"><i class="material-icons">queue_music</i></div>
+        </div>
+    </div>
+</div>
+<script src="js/omit.js"></script>
+<script src="js/control.js"></script>
+<script>
+    let index = 0
+    const songs = {
+        UC: 'UNICORN',
+        lin: 'cocoon',
+        LeagueOfLegends: 'Braum',
+    }
+    const songsIndex = function(change) {
+        let keys = Object.keys(songs)
+        if (change === 'next') {
+            index = (index + 1 + keys.length) % keys.length
+        }
+        if (change === 'prev') {
+            index = (index - 1 + keys.length) % keys.length
+        }
+        return index
+    }
+    //改变显示的artist和name
+    const change = (artist, name) => {
+        let a = e('.song-name')
+        a.innerHTML = name
+        let b = e('.artist-name')
+        b.innerHTML = artist
+    }
+    //循环、随机、顺序播放
+    let state = 'order'
+    const playMode = (audio, state) => {
+        log('进入判断')
+        if (state === 'order') {
+            audio.addEventListener('ended', function() {
+                let keys = Object.keys(songs)
+                index = (index + 1) % keys.length
+                changeSongs(audio, index)
+            })
+        }
+        if (state === 'random') {
+            audio.addEventListener('ended', function() {
+                let keys = Object.keys(songs)
+                let i = Math.random()
+                i = i * keys.length
+                index = Math.floor(i)
+                changeSongs(audio, index)
+            })
+        }
+        if (state === 'loop') {
+            log('进入loop')
+            audio.addEventListener('ended', function() {
+                log(1)
+                audio.play()
+            })
+        }
+    }
+    //随机播放按钮
+    const shufflePlay = (audio) => {
+        log('loopplay')
+        log(state !== 'random')
+        let button = e('.shuffle')
+        button.addEventListener('click', function() {
+            log(1)
+            if(state !== 'loop'){
+                log('random')
+                state = 'random'
+                playMode(audio, 'random')
+            } else {
+                log('order')
+                state = 'order'
+                playMode(audio, 'order')
+            }
+        })
+    }
+    //循环播放按钮
+    const loopPlay = (audio) => {
+        log(state !== 'loop')
+        let button = e('.repeat')
+        button.addEventListener('click', function() {
+            if(state !== 'loop'){
+                log('loop')
+                state = 'loop'
+                playMode(audio, 'loop')
+            } else {
+                log('order')
+                state = 'order'
+                playMode(audio, 'order')
+            }
+        })
+    }
+    //控制暂停和播放
+    const bindEventPlay = function(audio) {
+        let button = e('.player-controls__btn_play')
+        button.addEventListener('click', function() {
+            if (button.classList.contains('play')) {
+                audio.play()
+                timeMove(audio)
+                button.classList.remove('play')
+                button.classList.add('pause')
+            } else {
+                audio.pause()
+                button.classList.remove('pause')
+                button.classList.add('play')
+            }
+        })
+    }
+    //改变艺术家、 歌曲名字、 歌曲来源
+    const changeSongs = (audio, index) => {
+        let keys = Object.keys(songs)
+        let artist = keys[index]
+        let name = songs[artist]
+        change(artist, name)
+        audio.src = 'audio/' + `${name}` + '.mp3'
+        let inner = e('.inner')
+        inner.style.width = 0 + '%'
+        audio.play()
+    }
+    //下一首
+    const nextSong = (audio) => {
+        let button = e('.player-controls__btn_next')
+        button.addEventListener('click', function() {
+            index = songsIndex('next')
+            changeSongs(audio, index)
+        })
+    }
+    //上一首
+    const backSong = (audio) => {
+        let button = e('.player-controls__btn_prev')
+        button.addEventListener('click', function() {
+            index = songsIndex('prev')
+            changeSongs(audio, index)
+        })
+    }
+    //执行
+    const bindEvents = function() {
+        let audio = e('#id-audio-player')
+        bindEventPlay(audio)
+        nextSong(audio)
+        backSong(audio)
+        control(audio)
+        changeTime(audio)
+        playMode(audio, state)
+        loopPlay(audio)
+        shufflePlay(audio)
+    }
+
+    const __main = function() {
+        bindEvents()
+    }
+
+    __main()
+</script>
+</body>
+</html>

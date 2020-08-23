@@ -1,0 +1,45 @@
+.button {
+    text-align: center;
+}
+.cell {
+    width: 20px;
+    height: 20px;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    float:left;
+    font-size: 3px;
+    background: black;
+}
+div[data-number = "0"] {
+    font-size: 0px;
+    background: black;
+}
+.score {
+    float: top;
+    display: block;
+    text-align: center;
+    font-size: 50px;
+}
+#id-div-snake {
+    /*border: solid 3px grey;*/
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translateY(-50%);
+    transform: translateX(-50%);
+}
+div[data-number = "1"] {
+    font-size: 0px;
+    background: white;
+}
+div[data-number = "2"] {
+    font-size: 0px;
+    background: darkgray;
+}
+body{
+    background: url("Sea.jpg");
+    overflow: auto;
+    background-size:cover;
+    background-repeat: no-repeat;
+}
