@@ -133,17 +133,21 @@
         let j = a.dataset.y
         i = Number(i) + x
         j = Number(j) + y
+        log(square)
         if (i < 0 || j < 0) {
            alert('游戏结束')
+            window.location.reload()
         }
         if (square[i][j] === 2) {
             alert('游戏结束')
+            window.location.reload()
         }
         save.push([i, j])
         square[i][j] = 2
         let b = e(`div[data-x = "${i}"][data-y = "${j}"]`)
         if (b == null) {
             alert('游戏结束')
+            window.location.reload()
         }
         a.classList.remove('head')
         if(b.dataset.number === '1') {
@@ -160,6 +164,7 @@
             num = num + 1
             if (num === 20) {
                 alert('游戏胜利')
+                window.location.reload()
             }
             a.innerHTML = 'score:' + showNumber(num)
             square[i][j] = 2

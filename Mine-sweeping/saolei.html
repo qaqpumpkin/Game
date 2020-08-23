@@ -157,6 +157,7 @@
                     openAround(square, x, y)
                 } else if(a.dataset.number !== 9){
                     line.push(num)
+                    a.classList.remove('flag')
                     a.classList.add('open')
                 }
             }
