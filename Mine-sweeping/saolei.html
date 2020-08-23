@@ -82,11 +82,12 @@
 
         })
     }
+    //阻止默认事件
     document.oncontextmenu = function (event) {
         event.preventDefault();
     };
     let num2 = 0
-    const vjkl = function(square) {
+    const clickCell = function(square) {
         bindAll('.cell', 'click', function(event) {
             log('点击')
             //计步器
@@ -112,7 +113,7 @@
                 let y = self.dataset.y
                 x = Number(x)
                 y = Number(y)
-                vjklAround(square, x, y)
+                openAround(square, x, y)
             } else {
                 self.classList.add('open')
             }
@@ -120,7 +121,7 @@
     }
 
     const openAround = function(square, x, y) {
-            //标记周围元素
+        //标记周围元素
         open(square, x - 1, y - 1)
         open(square, x, y - 1)
         open(square, x + 1, y - 1)
@@ -151,6 +152,7 @@
             if(!a.classList.contains('open') && judge(line, num)){
                 if(a.dataset.number == 0){
                     line.push(num)
+                    a.classList.remove('flag')
                     a.classList.add('open')
                     openAround(square, x, y)
                 } else if(a.dataset.number !== 9){
@@ -190,7 +192,7 @@
         log(square)
         renderSquare(square)
         bindEventDelegate()
-        vjkl(square)
+        clickCell(square)
         time()
     }
     __main()
