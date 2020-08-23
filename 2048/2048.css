@@ -1,0 +1,88 @@
+.name {
+    font-size: 30px;
+    text-align: center;
+    display: block;
+    float: top;
+    left: 50%;
+}
+.button {
+    text-align: center;
+}
+.cell {
+    width: 70px;
+    height: 70px;
+    display: block;
+    text-align: center;
+    line-height: 70px;
+    border: solid 3px #bbada0;
+    cursor: pointer;
+    float:left;
+    font-size: 30px;
+}
+.picture {
+    max-width: 70px;
+    max-height: 70px;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    float:left;
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#id-div-mine {
+    position: absolute;
+    top: 10%;
+    left: 50%;
+    transform: translateY(-50%);
+    transform: translateX(-50%);
+}
+div[data-number = "0"] {
+    font-size: 0px!important;
+    background: #d3beb7;
+}
+div[data-number = "2"] {
+    background: #f0e3db;
+}
+div[data-number = "0"] {
+    font-size: 0px!important;
+    background: #d3beb7;
+}
+div[data-number = "4"] {
+    background: #ece0c8;
+}
+div[data-number = "8"] {
+    background: #f2b179;
+}
+div[data-number = "16"] {
+    background: #f59563;
+}
+div[data-number = "32"] {
+    background: #f47d5d;
+}
+div[data-number = "64"] {
+    background: #f45e3b;
+}
+div[data-number = "128"] {
+    background: #edce71;
+}
+div[data-number = "256"] {
+    background: #efcb64;
+}
+div[data-number = "512"] {
+    background: #ecc850;
+}
+div[data-number = "1024"] {
+    background: #eec542;
+}
+div[data-number = "2048"] {
+    background: #ecc32d;
+}
+body{
+    background: url("ice.jpg");
+    overflow: auto;
+    background-size:cover;
+    background-repeat: no-repeat;
+}

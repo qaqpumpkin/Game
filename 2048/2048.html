@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>2048</title>
+    <link type="text/css" rel="stylesheet" href="2048.css">
+</head>
+<body>
+<div class="name">2048</div>
+<div class="button"><input type="button" value="重新开始" onclick="location.reload()"></div>
+<script src="omit.js"></script>
+<script>
+    //随机将数组中为0变成2
+    const randomChange = function (square) {
+        let s = []
+        let result = square
+        for (let i = 0; i < square.length; i++) {
+            for (let j = 0; j < square[0].length; j++) {
+                if (square[i][j] === 0) {
+                    s.push(`${i}${j}`)
+                }
+            }
+        }
+        let n = Math.random()
+        n = n * s.length
+        n = Math.floor(n)
+        let m = String(s[n])
+        let i = Number(m[0])
+        let j = Number(m[1])
+        result[i][j] = 2
+        return result
+    }
+    const update = function (square) {
+        for (let i = 0; i < square.length; i++) {
+            for (let j = 0; j < square[i].length; j++) {
+                let a = e(`div[data-x = "${i}"][data-y = "${j}"]`)
+                a.innerHTML = `${square[i][j]}`
+                a.dataset.number = `${square[i][j]}`
+            }
+        }
+    }
+    //生成表格
+    const templateCell = function(line, x) {
+        let str = ''
+        for (let i = 0; i < line.length; i++) {
+            let n = line[i]
+            str += `<div class="cell" data-number="${n}" data-x="${x}" data-y="${i}">` + `${n}` + '</div>'
+        }
+        return str
+    }
+    const templateRow = function(square) {
+        let str = ''
+        for (let i = 0; i < square.length; i++) {
+            str += '<div class="row clearfix">'
+            str += templateCell(square[i], i)
+            str += '</div>'
+        }
+        return str
+    }
+    const renderSquare = function(square) {
+        let body = e('body')
+        body.insertAdjacentHTML('beforeend', '<div id="id-div-mine"></div>')
+        let mine = e('#id-div-mine')
+        mine.insertAdjacentHTML('beforeend', templateRow(square))
+    }
+
+    const select = function (line) {
+        let l = []
+        for (let i = 0; i < line.length; i++) {
+            if (line[i] !==  0) {
+                l.push(line[i])
+            }
+        }
+        return l
+    }
+    //行列转置
+    const turn = function (square) {
+        let s = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+        ]
+        for (let i = 0; i < square.length; i++) {
+            for (let j = 0; j < square[0].length; j++) {
+                s[j][i] = square[i][j]
+            }
+        }
+        return s
+    }
+    //正向相加
+    const addForward = function (line) {
+        let l = []
+        l = select(line)
+        for (let i = 0; i < l.length; i++) {
+            if(l[i] === l[i + 1]) {
+                l[i] = l[i] * 2
+                l[i + 1] = 0
+            }
+        }
+        l = select(l)
+        let n = 4 - l.length
+        for (let i = 0; i < n; i++) {
+            l.push(0)
+        }
+        return l
+    }
+    //逆向相加
+    const addBack = function (line) {
+        let l = []
+        let s = []
+        l = select(line)
+        for (let i = l.length - 1; i > -1; i--) {
+            if(l[i] === l[i - 1]) {
+                l[i] = l[i] * 2
+                l[i - 1] = 0
+            }
+        }
+        l = select(l)
+        let n = 4 - l.length
+        for (let i = 0; i < n; i++) {
+            s.push(0)
+        }
+        for (let i = 0; i < l.length; i++) {
+            s.push(l[i])
+        }
+        return s
+    }
+    //左移
+    const moveLeft = function (square) {
+        let s = []
+        for (let i = 0; i < square.length; i++) {
+            let a = addForward(square[i])
+            s.push(a)
+        }
+        return s
+    }
+    //右移
+    const moveRight = function (square) {
+        let s = []
+        for (let i = 0; i < square.length; i++) {
+            let a = addBack(square[i])
+            s.push(a)
+        }
+        return s
+    }
+    //上移
+    const moveUp = function (square) {
+        let s = turn(square)
+        s = moveLeft(s)
+        s = turn(s)
+        return s
+    }
+    //下移
+    const moveDown = function (square) {
+        let s = turn(square)
+        s = moveRight(s)
+        s = turn(s)
+        return s
+    }
+    const direction = function(square) {
+        let s = []
+        let pic = e('#picture')
+        document.onkeydown = function (event) {
+            let e = event
+            let l = square
+            if(e.keyCode === 37) {
+                s = moveLeft(square)
+                square = randomChange(s)
+                update(square)
+                pic.innerHTML = '<img class="picture" src="left.png" alt="left">'
+            }
+            if(e.keyCode === 38) {
+                s = moveUp(square)
+                square = randomChange(s)
+                update(square)
+                pic.innerHTML = '<img class="picture" src="up.png" alt="up">'
+            }
+            if(e.keyCode === 39) {
+                s = moveRight(square)
+                square = randomChange(s)
+                update(square)
+                pic.innerHTML = '<img class="picture" src="right.png" alt="right">'
+            }
+            if(e.keyCode === 40) {
+                s = moveDown(square)
+                square = randomChange(s)
+                update(square)
+                pic.innerHTML = '<img class="picture" src="down.png" alt="down">'
+            }
+        }
+    }
+    //上下左右显示
+    const show = function () {
+        let body = e('body')
+        body.insertAdjacentHTML('beforeend', '<div id="picture"></div>')
+    }
+    //判断结束
+    // const end = function (l, square) {
+    //     if (l === square) {
+    //         alert('游戏结束')
+    //     }
+    // }
+    const __main = function() {
+        let square = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+        ]
+        randomChange(square)
+        randomChange(square)
+        renderSquare(square)
+        show()
+        direction(square)
+    }
+    __main()
+</script>
+</body>
+</html>
